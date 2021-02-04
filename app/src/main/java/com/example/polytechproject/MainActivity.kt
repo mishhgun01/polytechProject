@@ -3,15 +3,13 @@ package com.example.polytechproject
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Camera
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.SurfaceHolder
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity() {
     //присвиаиваем переменной о совершении операции 1, чтобы активность заппустилась
@@ -25,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         //теперь находим эту переменную в разметке, чтобы она выполняла функции
         imageView = findViewById(R.id.image)
-        // и находим кнопку, чтобы её нажатие к чеу-то приводило
+        // и находим кнопку, чтобы её нажатие к чему-то приводило
         val button: Button = findViewById(R.id.button1)
         //обрабатываем нажатие кнопки
         button.setOnClickListener(View.OnClickListener {
@@ -47,8 +45,14 @@ class MainActivity : AppCompatActivity() {
         if (requestCode==REQUEST_TAKE_PHOTO && resultCode== RESULT_OK){
             //берем снимок и конвертируем в битмап формат для отображения
             val thumbnailBitmap = data?.extras?.get("data") as Bitmap
-            //устанавливаем на экран изображение
-            imageView.setImageBitmap(thumbnailBitmap)
+            val bs = ByteArrayOutputStream()
+            thumbnailBitmap.compress(Bitmap.CompressFormat.PNG, 50, bs)
+            val ba = bs.toByteArray()
+            val i = Intent(this@MainActivity, ShowImage::class.java)
+            i.putExtra("image", ba)
+            startActivity(i)
+//            //устанавливаем на экран изображение
+//            imageView.setImageBitmap(thumbnailBitmap)
         }
     }
 }
